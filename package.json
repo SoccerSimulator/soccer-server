@@ -1,0 +1,28 @@
+{
+  "name": "soccer-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:SoccerSimulator/soccer-server.git",
+  "author": "<eidan47@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "ts-node src/server.ts",
+    "build": "tsc",
+    "serve": "node dist/server.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.7",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "moment-timezone": "^0.5.46",
+    "mongoose": "^8.8.1",
+    "uuid": "^11.0.3"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/mongoose": "^5.11.97",
+    "@types/node": "^22.9.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3"
+  }
+}
