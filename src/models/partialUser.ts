@@ -7,7 +7,9 @@ export interface IPartialUser extends Document {
     email: string;
     password?: string; // Holds the password or OAuth token from Google/Facebook/manual
     partialCreatedAt: Date;
-    registrationStep: number; // Indicates the current registration step
+    isPartialUser: boolean;
+    googleId?: string;
+    facebookId?: string
 }
 
 export const PartialUserSchema: Schema = new Schema({
@@ -18,7 +20,9 @@ export const PartialUserSchema: Schema = new Schema({
         type: Date,
         default: () => moment().tz('Asia/Jerusalem').toDate()
     },
-    registrationStep: { type: Number, required: true, default: 1 }
+    isPartialUser: { type: Boolean, required: true, default: true },
+    googleId: { type: String, unique: true, sparse: true },
+    facebookId: { type: String, unique: true, sparse: true }
 });
 
 const PartialUser = mongoose.model<IPartialUser>('PartialUser', PartialUserSchema, 'PartialUsers');
