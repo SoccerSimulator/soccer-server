@@ -9,6 +9,7 @@ export interface IUser extends IPartialUser {
     teamName: string;
     referral?: string; // Referral code or information, optional
     createdAt: Date;
+
 }
 
 const UserSchema: Schema = new Schema({
@@ -20,7 +21,9 @@ const UserSchema: Schema = new Schema({
     createdAt: {
         type: Date,
         default: () => moment().tz('Asia/Jerusalem').toDate() // Set createdAt to Israel timezone
-    }
+    },
+
+
 });
 
 // Explicitly specify the collection name as 'Users'
