@@ -14,11 +14,13 @@ import './config/passportConfig';
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const sessionSecret = process.env.SESSION_SECRET || require('crypto').randomBytes(32).toString('hex');
+
 // Middleware setup
 app.use(express.json());
 app.use(
     session({
-        secret: process.env.SESSION_SECRET || 'secret-key',
+        secret: sessionSecret,
         resave: false,
         saveUninitialized: false,
     })
