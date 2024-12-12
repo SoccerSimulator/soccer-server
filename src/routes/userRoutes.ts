@@ -1,9 +1,12 @@
-import express, { Request, Response } from 'express';
+// src/routes/userRoutes.ts
 
+import express, { Request, Response } from 'express';
+import { validateEmailAvailability } from '../middleware/validateEmail';
+import { getUserProfile } from '../controllers/userController';
+import { verifyToken } from '../middleware/authMiddleware';
 import PartialUser from '../models/partialUser';
 import User from '../models/user';
 import { asyncHandler } from '../middleware/errorHandler';
-import { validateEmailAvailability } from '../middleware/validateEmail';
 
 const router = express.Router();
 
@@ -15,7 +18,7 @@ router.post(
         const { email, password } = req.body;
 
         // Create a new PartialUser
-        const partialUser = new PartialUser({ email, password, registrationStep: 1 });
+        const partialUser = new PartialUser({ email, password, isPartialUser: true });
         await partialUser.save();
 
         res.status(201).send(partialUser);
@@ -26,7 +29,9 @@ router.post(
 router.post(
     '/complete-registration',
     asyncHandler(async (req: Request, res: Response): Promise<void> => {
-        const { email, authProvider, passwordHash, username, nationality, teamName, referral } = req.body;
+        console.log('Request body:', req.body); // Debugging line
+
+        const { email, authProvider, username, nationality, teamName, referral } = req.body;
 
         // Check if a complete user already exists
         const existingUser = await User.findOne({ email });
@@ -44,23 +49,27 @@ router.post(
 
         // Create a new User from the PartialUser
         const user = new User({
+            _id: partialUser._id,
             email: partialUser.email,
-            passwordHash: passwordHash || partialUser.password, // Use hashed password or original if not provided
+            partialCreatedAt: partialUser.partialCreatedAt,
+            isPartialUser: false,
             authProvider,
             username,
             nationality,
             teamName,
             referral,
-            createdAt: partialUser.partialCreatedAt // Copy the partialCreatedAt field from the partial user
         });
 
-        await user.save();
-
-        // Remove the PartialUser document after successful registration
-        await PartialUser.deleteOne({ email });
+        await user.save().then(async () => {
+            // Remove the PartialUser document after successful registration
+            await PartialUser.deleteOne({ email });
+        });
 
         res.status(201).send(user);
     })
 );
+
+// Protected route example (profile)
+router.get('/profile', verifyToken, getUserProfile); // Example protected route
 
 export default router;
